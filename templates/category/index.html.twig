@@ -4,9 +4,14 @@
 
 {% block body %}
     <h1>Toutes les catégories : </h1>
+    <h2>
+        <a href="{{ path('category_new') }}">
+        Ajoutez une catégorie
+        </a>
+    </h2>
     {% for category in categories %}
         <div>
-            <h2>{{ loop.index }} / Catégorie : <a href="{{ path("category_show", { categoryName: category.name }) }}">{{ category.name }}</a> </h2>
+            <h2>{{ loop.index }} / Catégorie : <a href="{{ path("category_show", { categoryName: category.name }) }}">{{ category.name }}</a></h2>
         </div>
     {% endfor %}
 
