@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Série #{{ program.id }}{% endblock %}
+
+{% block body %}
+    <div class="media">
+        <img class="align-self-start mr-3" src="{{program.poster}}" alt="{{ program.title }} poster">
+        <div class="media-body">
+            <h1 class="mt-0">{{ program.title }}</h1>
+            <p>{{ program.synopsis }}</p>
+            <div class="media">
+                <h2>Liste des saisons</h2>
+                <ul>
+                    {% for season in program.seasons %}
+                        <li><a href="{{ path('program_season_show', { programId: program.id, seasonId: season.id }) }}">Season {{ season.number }}, {{ season.year }}</a></li>
+
+                    {% endfor %}
+                </ul>
+            </div>
+            <p>Catégorie :<a href="{{ path('category_index') }}"> {{ program.category.name }}</a></p>
+        </div>
+    </div>
+
+    <a href="{{ path('program_index') }}">
+        Retour à la liste des programmes
+    </a>
+{% endblock %}

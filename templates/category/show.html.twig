@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categorie {{ category.name }}{% endblock %}
+
+{% block body %}
+    <div class="media">
+        <div class="media-body">
+            <h1 class="mt-0">{{ category.name }}</h1>
+            {% for program in programs %}
+                <h2>{{ program.id }} - {{ program.title }}</h2>
+                <ul>
+                    <li>{{ program.synopsis }}</li>
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+
+    <a href="{{ path('category_index') }}">
+        Retour à la liste des catégories
+    </a>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Série {{ program.title }}{% endblock %}
+
+{% block body %}
+    <div class="program card text-center">
+    <div class="card-header">
+        {{ program.title }} - Season {{ season.number }}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ episode.number }} - {{ episode.title }}</h5>
+        <p class="card-text">{{ episode.synopsis }}</p>
+    </div>
+{% endblock %}
