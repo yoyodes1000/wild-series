@@ -39,6 +39,7 @@ class CategoryController extends AbstractController
             // For example : persiste & flush the entity
             $entityManager->persist($category);
             $entityManager->flush();
+            $this->addFlash('success', 'Nouvelle catégorie créée.');
             // And redirect to a route that display the result
             return $this->redirectToRoute('category_index');
         }

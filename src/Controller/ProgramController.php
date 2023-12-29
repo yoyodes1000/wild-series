@@ -36,6 +36,8 @@ class ProgramController extends AbstractController
         if ($form->isSubmitted()) {
             $entityManager->persist($program);
             $entityManager->flush();
+            $this->addFlash('success', 'Nouvelle série créée.');
+
             // And redirect to a route that display the result
             return $this->redirectToRoute('program_index');
         }
@@ -79,5 +81,17 @@ class ProgramController extends AbstractController
             'season' => $season,
             'episode' => $episode,
         ]);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, Program $program, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$program->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($program);
+            $entityManager->flush();
+            $this->addFlash('danger', 'Série effacée.');
+        }
+
+        return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
     }
 }

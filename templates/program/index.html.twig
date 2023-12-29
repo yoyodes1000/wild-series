@@ -4,11 +4,21 @@
 
 {% block body %}
     <h1>Toutes les séries : </h1>
+    <h2>
+        <a href="{{ path('program_new') }}">
+            Ajoutez une série
+        </a>
+    </h2>
     {% for program in program %}
         <div>
             <h2>{{ loop.index }} / <a href="{{ path("program_show", { id: program.id }) }}">{{ program.title }}</a> - Catégorie : {{ program.category.name }}</h2>
+            {#<ul>
+                #}{#{% for actor in actor.programs %}
+                    <li><a href="{{ path('actor_index', {id}) }}">{{ actor.name }}</a></li>
+                {% endfor %}#}{#
+            </ul>#}
             <p>{{ program.synopsis }}</p>
-            <img src="{{ program.poster }}">
+            <img src="{{ asset('assets/images/{{ program.poster }}') }}" alt="{{ program.poster }}">
         </div>
     {% else %}
         Aucune série trouvée.
