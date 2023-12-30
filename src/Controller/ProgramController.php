@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Entity\Season;
-use Symfony\Component\Form\FormTypeInterface;
+use App\Service\ProgramDuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProgramRepository;
 use App\Form\ProgramType;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -28,12 +29,14 @@ class ProgramController extends AbstractController
     }
 
     #[Route('/new', name: 'new')]
-    public function new(Request $request, EntityManagerInterface $entityManager) : Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger) : Response
     {
         $program = new Program();
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
+            $slug = $slugger->slug($program->getTitle());
+            $program->setSlug($slug);
             $entityManager->persist($program);
             $entityManager->flush();
             $this->addFlash('success', 'Nouvelle série créée.');
@@ -47,16 +50,12 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show', requirements: ['id'=>'\d+'], methods: ['GET'])]
-    public function show(Program $program): Response
+    #[Route('/{slug}', name: 'show', requirements: ['id'=>'\d+'], methods: ['GET'])]
+    public function show(Program $program, ProgramDuration $programDuration): Response
     {
-        if (!$program) {
-            throw $this->createNotFoundException(
-                'No program with id : ' . $id . ' found in program\'s table.'
-            );
-        }
         return $this->render('program/show.html.twig', [
             'program' => $program,
+            'programDuration' => $programDuration->calculate($program),
         ]);
     }
 

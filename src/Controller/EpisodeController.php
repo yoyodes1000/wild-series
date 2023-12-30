@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/episode', name: 'episode_')]
 class EpisodeController extends AbstractController
@@ -23,13 +24,15 @@ class EpisodeController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $episode = new Episode();
         $form = $this->createForm(EpisodeType::class, $episode);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugger->slug($episode->getTitle());
+            $episode->setSlug($slug);
             $entityManager->persist($episode);
             $entityManager->flush();
             $this->addFlash('success', 'Nouvel épisode créée.');
@@ -43,7 +46,7 @@ class EpisodeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    #[Route('/{slug}', name: 'show', methods: ['GET'])]
     public function show(Episode $episode): Response
     {
         return $this->render('episode/show.html.twig', [
