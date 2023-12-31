@@ -1,0 +1,3 @@
+{% for actor in actors %}
+    <li><a class="dropdown-item" href="{{ path("actor_show", { slug: actor.slug }) }}">{{ actor.name }}</a></li>
+{% endfor %}

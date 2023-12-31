@@ -11,14 +11,14 @@
     </h2>
     {% for program in program %}
         <div>
+            {#<img class="image_serie" alt="image {{ program.title }}" src="{{ vich_uploader_asset(program) }}">#}
             <h2>{{ loop.index }} / <a href="{{ path("program_show", { slug: program.slug }) }}">{{ program.title }}</a> - Catégorie : {{ program.category.name }}</h2>
             {#<ul>
-                #}{#{% for actor in actor.programs %}
+            #}{#{% for actor in actor.programs %}
                     <li><a href="{{ path('actor_index', {id}) }}">{{ actor.name }}</a></li>
                 {% endfor %}#}{#
             </ul>#}
             <p>{{ program.synopsis }}</p>
-            <img src="{{ asset('assets/images/{{ program.poster }}') }}" alt="{{ program.poster }}">
         </div>
     {% else %}
         Aucune série trouvée.

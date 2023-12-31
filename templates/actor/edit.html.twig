@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Édition de l'acteur {{ actor.name }}{% endblock %}
+
+{% block body %}
+    <h1>Édition de l'acteur {{ actor.name }}</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.pictureFile) }}
+    {{ form_row(form.programs) }}
+
+    <button type="submit">Enregistrer</button>
+
+    {{ form_end(form) }}
+{% endblock %}
