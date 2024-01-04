@@ -1,0 +1,62 @@
+{#
+{% extends 'base.html.twig' %}
+
+{% block title %}Série {{ program.title }}{% endblock %}
+
+{% block body %}
+    <div class="program card text-center">
+        <div class="card-header">
+            {{ program.title }} - Season {{ season.number }}
+            <img class="image_serie" alt="image {{ program.title }}" src="{{ vich_uploader_asset(program) }}">
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ episode.number }} - {{ episode.title }}</h5>
+            <p class="card-text">{{ episode.synopsis }}</p>
+    </div>
+{% endblock %}#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Episode #{{ episode.number }}{% endblock %}
+
+{% block body %}
+    <div class="program card text-center">
+
+        <div class="card-header">
+            <h1 class="mt-0"> <a class="zoomLink" href="{{ path('program_season_show', {'slug': program.slug, 'number': season.number}) }}">Episode {{ episode.number }} </a>  / Saison {{ season.number }}  de {{ program.title }}</h1>
+            <p>{{ episode.title }}</p>
+            <p>{{ episode.synopsis }}</p>
+
+            {% if app.user %}
+                <h3>Ajouter un commentaire</h3>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn">Ajouter un commentaire</button>
+                {{ form_end(form) }}
+            {% else %}
+                <p>Vous devez être connecté pour ajouter un commentaire.</p>
+            {% endif %}
+
+            {% if episode.comments|length > 0 %}
+                <h3>Commentaires :</h3>
+                <ul>
+                    {% set commentsSorted = commentRepository.findBy({'episode': episode}, {'createdAt': 'ASC'}) %}
+                    {% for comment in commentsSorted %}
+                        <li>
+                            <p>{{ comment.author.email  }} / note {{ comment.rate}}/5</p>
+                            <p> fait le : {{ comment.createdAt|date('d/m/Y') }}</p>
+                            <p>commentaire : {{ comment.comment }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucun commentaire pour le moment.</p>
+            {% endif %}
+
+        </div>
+
+        <a href="{{ path('program_season_show', {'slug': program.slug, 'number': season.number}) }}">
+            Retour à la page de la série
+        </a>
+    </div>
+{% endblock %}

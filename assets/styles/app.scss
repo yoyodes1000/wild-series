@@ -2,6 +2,7 @@
 
 body {
     background-color: rgba(239, 239, 239, 0.94);
+    font-family: Pacifico;
 }
 
 .navbar {
@@ -12,9 +13,33 @@ body {
     color:  rgba(239, 239, 239, 0.94) !important;
 }
 
+h1, h2{
+    text-align: center;
+}
+
+.container_serie_global {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around !important;
+}
+
+.container_serie {
+    width: 40%;
+    margin: 5px;
+    background-color: #D47FFC;
+    margin-bottom: 15px;
+    text-align: center; /* Ajout de cette ligne pour centrer horizontalement le contenu */
+}
+
 .image_serie {
-    width: 150px !important;
-    height: auto !important;
+    width: 200px;
+    height: auto;
+}
+
+.liste-serie {
+    margin: auto;
+    text-align: center;
+    list-style-type: none;
 }
 
 .image_acteur {

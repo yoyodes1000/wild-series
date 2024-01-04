@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Entity\Season;
+use App\Entity\Comment;
+use App\Repository\CommentRepository;
 use App\Service\ProgramDuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -16,7 +18,10 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProgramRepository;
 use App\Form\ProgramType;
+use App\Form\CommentType;
 use Symfony\Component\String\Slugger\SluggerInterface;
+/*use App\DateTimeImmutable;*/
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -71,10 +76,10 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/show/{programId}/seasons/{seasonId}', name: 'season_show', requirements: ['programId'=>'\d+', 'seasonId'=>'\d+'], methods: ['GET'])]
+    #[Route('/show/{slug}/seasons/{number}', name: 'season_show', requirements: ['programId'=>'\d+', 'seasonId'=>'\d+'], methods: ['GET'])]
     public function showSeason(
-        #[MapEntity(mapping: ['programId' => 'id'])] Program $program,
-        #[MapEntity(mapping: ['seasonId' => 'id'])] Season $season): Response
+        #[MapEntity(mapping: ['slug' => 'slug'])] Program $program,
+        #[MapEntity(mapping: ['number' => 'number'])] Season $season): Response
     {
         return $this->render('program/season_show.html.twig', [
             'program' => $program,
@@ -82,15 +87,47 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/show/{programId}/seasons/{seasonId}/episode/{episodeId}', name: 'episode_show')]
-    public function showEpisode(#[MapEntity(mapping: ['programId' => 'id'])] Program $program,
+    #[Route('/{slug}/seasons/{seasonId}/episode/{episodeSlug}', name: 'episode_show')]
+    public function showEpisode(#[MapEntity(mapping: ['slug' => 'slug'])] Program $program,
                                 #[MapEntity(mapping: ['seasonId' => 'id'])] Season $season,
-                                #[MapEntity(mapping: ['episodeId' => 'id'])] Episode $episode):Response
+                                #[MapEntity(mapping: ['episodeSlug' => 'slug'])] Episode $episode,
+                                Request $request,
+                                EntityManagerInterface $entityManager,
+                                CommentRepository $commentRepository):Response
     {
-        return $this->render('program/program_episode.html.twig',[
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+
+            $comment->setEpisode($episode);
+            $comment->setAuthor($user);
+            $comment->setCreatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('program_episode_show', [
+                'slug' => $program->getSlug(),
+                'seasonId' => $season->getId(),
+                'episodeSlug' => $episode->getSlug(),
+            ]);
+        }
+
+        $commentsSorted =  $commentRepository->findBy(
+            ['episode' => $episode],
+            ['createdAt' => 'ASC']
+        );
+
+        return $this->render('program/episode_show.html.twig', [
             'program' => $program,
             'season' => $season,
             'episode' => $episode,
+            'form' => $form,
+            'commentsSorted' => $commentsSorted,
+            'commentRepository' => $commentRepository,
         ]);
     }
 
