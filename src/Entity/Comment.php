@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -14,11 +15,14 @@ class Comment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $comment = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     private ?int $rate = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?User $author = null;
@@ -26,8 +30,8 @@ class Comment
     #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?Episode $episode = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\ManyToOne(inversedBy: 'CommentOwner')]
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
@@ -39,7 +43,7 @@ class Comment
         return $this->comment;
     }
 
-    public function setComment(?string $comment): static
+    public function setComment(string $comment): static
     {
         $this->comment = $comment;
 
@@ -51,7 +55,7 @@ class Comment
         return $this->rate;
     }
 
-    public function setRate(?int $rate): static
+    public function setRate(int $rate): static
     {
         $this->rate = $rate;
 
@@ -82,16 +86,27 @@ class Comment
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
 }

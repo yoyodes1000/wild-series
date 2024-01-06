@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -32,9 +33,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
     private Collection $comments;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Program::class)]
+    private Collection $programs;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Comment::class)]
+    private Collection $CommentOwner;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->programs = new ArrayCollection();
+        $this->CommentOwner = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,13 +133,70 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getAuthor() === $this) {
                 $comment->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Program>
+     */
+    public function getPrograms(): Collection
+    {
+        return $this->programs;
+    }
+
+    public function addProgram(Program $program): static
+    {
+        if (!$this->programs->contains($program)) {
+            $this->programs->add($program);
+            $program->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProgram(Program $program): static
+    {
+        if ($this->programs->removeElement($program)) {
+            if ($program->getOwner() === $this) {
+                $program->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getCommentOwner(): Collection
+    {
+        return $this->CommentOwner;
+    }
+
+    public function addCommentOwner(Comment $commentOwner): static
+    {
+        if (!$this->CommentOwner->contains($commentOwner)) {
+            $this->CommentOwner->add($commentOwner);
+            $commentOwner->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentOwner(Comment $commentOwner): static
+    {
+        if ($this->CommentOwner->removeElement($commentOwner)) {
+            // set the owning side to null (unless already changed)
+            if ($commentOwner->getOwner() === $this) {
+                $commentOwner->setOwner(null);
             }
         }
 

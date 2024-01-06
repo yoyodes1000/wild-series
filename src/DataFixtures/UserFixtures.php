@@ -15,12 +15,12 @@ class UserFixtures extends Fixture
     private const USERS = [
         [
             'email' => 'contributor@monsite.com',
-            'roles' => 'USER',
+            'roles' => ['ROLE_USER'],
             'password' => 'pimpoye_contributor',
         ],
         [
             'email' => 'admin@monsite.com',
-            'roles' => 'ADMIN',
+            'roles' => ['ROLE_ADMIN'],
             'password' => 'pimpoye_admin',
         ]
     ];
@@ -44,6 +44,7 @@ class UserFixtures extends Fixture
                 $user['password'],
             );
             $newUser->setPassword($hashedPassword);
+            $this->addReference('user_' . $user['email'], $newUser);
             $manager->persist($newUser);
         }
 

@@ -37,6 +37,12 @@
                 <p>Vous devez être connecté pour ajouter un commentaire.</p>
             {% endif %}
 
+            {% if is_granted("ROLE_ADMIN") or (is_granted("ROLE_CONTRIBUTOR") and app.user == program.owner) %}
+                <div class="card-footer text-muted">
+                    <a href="{{ path('program_edit', { slug: episode.slug }) }}" class="btn btn-primary">Edit Episode</a>
+                </div>
+            {% endif %}
+
             {% if episode.comments|length > 0 %}
                 <h3>Commentaires :</h3>
                 <ul>
