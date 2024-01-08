@@ -1,20 +1,3 @@
-{#
-{% extends 'base.html.twig' %}
-
-{% block title %}Série {{ program.title }}{% endblock %}
-
-{% block body %}
-    <div class="program card text-center">
-        <div class="card-header">
-            {{ program.title }} - Season {{ season.number }}
-            <img class="image_serie" alt="image {{ program.title }}" src="{{ vich_uploader_asset(program) }}">
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">{{ episode.number }} - {{ episode.title }}</h5>
-            <p class="card-text">{{ episode.synopsis }}</p>
-    </div>
-{% endblock %}#}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Episode #{{ episode.number }}{% endblock %}
@@ -52,13 +35,18 @@
                             <p>{{ comment.author.email  }} / note {{ comment.rate}}/5</p>
                             <p> fait le : {{ comment.createdAt|date('d/m/Y') }}</p>
                             <p>commentaire : {{ comment.comment }}</p>
+                            {% if app.user and (app.user == comment.author or is_granted('ROLE_ADMIN')) %}
+                                <form method="post" action="{{ path('program_delete', {'id': comment.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_comment') }}" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer le commentaire</button>
+                                </form>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
                 <p>Aucun commentaire pour le moment.</p>
             {% endif %}
-
         </div>
 
         <a href="{{ path('program_season_show', {'slug': program.slug, 'number': season.number}) }}">

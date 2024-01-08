@@ -41,18 +41,18 @@
 
     </div>#}
     <div class="container_serie_global row">
-    {% for program in program %}
-        <div class="container_serie col-md-6">
-            <h2>{{ loop.index }} / <a href="{{ path("program_show", { slug: program.slug }) }}">{{ program.title }}</a> - Catégorie : {{ program.category.name }}</h2>
-            <p>{{ program.synopsis }}</p>
-            <img class="image_serie" alt="image {{ program.title }}" src="{{ vich_uploader_asset(program) }}">
-            <ul class="liste-serie">
-                {% for actor in program.actors %}
-                    <li><a href="{{ path("actor_show", { slug: actor.slug }) }}">{{ actor.name }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endfor %}
+        {% for program in program %}
+            <div class="container_serie col-md-6">
+                <h2>{{ loop.index }} / <a href="{{ path("program_show", { slug: program.slug }) }}">{{ program.title }}</a> - Catégorie : {{ program.category.name }}</h2>
+                <p>{{ program.synopsis }}</p>
+                <img class="image_serie" alt="image {{ program.title }}" src="{{ vich_uploader_asset(program) }}">
+                <ul class="liste-serie">
+                    {% for actor in program.actors %}
+                        <li><a href="{{ path("actor_show", { slug: actor.slug }) }}">{{ actor.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
     </div>
 
     <a href="{{ path('app_index') }}">

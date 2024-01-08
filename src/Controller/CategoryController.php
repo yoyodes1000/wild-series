@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Category;
 use App\Form\CategoryType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use \Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 #[Route('/category', name: 'category_')]
 class CategoryController extends AbstractController

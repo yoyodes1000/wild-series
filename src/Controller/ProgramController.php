@@ -20,6 +20,7 @@ use App\Repository\ProgramRepository;
 use App\Form\ProgramType;
 use App\Form\CommentType;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -161,5 +162,25 @@ class ProgramController extends AbstractController
             'program' => $program,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/comment/{id}/delete', name: 'comment_delete', methods: ['POST'])]
+    public function deleteComment(Comment $comment, Security $security, EntityManagerInterface $entityManager): Response
+    {
+        // Vérifier si l'utilisateur a le droit de supprimer le commentaire
+        if (!($security->isGranted('ROLE_ADMIN') || ($security->isGranted('ROLE_CONTRIBUTOR') && $security->getUser() === $comment->getAuthor()))) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas le droit de supprimer ce commentaire.');
+        }
+
+        // Supprimer le commentaire de la base de données
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        // Ajouter un message flash de succès
+        $this->addFlash('success', 'Le commentaire a bien été supprimé.');
+
+        // Rediriger vers la page du programme associé à l'épisode
+        $programSlug = $comment->getEpisode()->getSeason()->getProgram()->getSlug();
+        return $this->redirectToRoute('program_show', ['slug' => $programSlug]);
     }
 }

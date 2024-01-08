@@ -73,7 +73,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         foreach (self::PROGRAMS as $programData) {
-            $users = ['contributor@monsite.com', 'admin@monsite.com'];
+            $role = ['contributor@monsite.com', 'admin@monsite.com'];
             $program = new Program();
             $program->setTitle($programData['title']);
             $program->setSynopsis($programData['synopsis']);
@@ -81,7 +81,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
             $program->setCountry($programData['country']);
             $program->setYear($programData['year']);
             $program->setCategory($this->getReference($programData['category']));
-            /*$program->setOwner($this->getReference('user_' . $users[array_rand($users)]));*/
+            $program->setOwner($this->getReference('user_' . $role[array_rand($role)]));
             $slug = $this->slugger->slug($program->getTitle());
             $program->setSlug($slug);
             $manager->persist($program);
